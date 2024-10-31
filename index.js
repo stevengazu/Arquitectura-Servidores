@@ -26,9 +26,15 @@ app.get('/api/employees', (req, res) => {
     } else if (req.query.user) {
         // Filtrar los empleados por privilegios si se proporciona el parámetro user
         resultEmployees = employees.filter(employee => employee.privileges === 'user');
+        if (!resultEmployees) {
+            return res.status(404).json({ code: "not_found" });
+        }
     } else if (req.query.badges) {
         // Filtrar los empleados por badges si se proporciona el parámetro badges
         resultEmployees = employees.filter(employee => employee.badges && employee.badges.includes(req.query.badges));
+        if (!resultEmployees) {
+            return res.status(404).json({ code: "not_found" });
+        }
     } else {
         resultEmployees = employees;
     }
