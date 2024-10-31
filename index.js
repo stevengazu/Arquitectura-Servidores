@@ -29,13 +29,32 @@ app.get('/api/employees', (req, res) => {
     } else if (req.query.badges) {
         // Filtrar los empleados por badges si se proporciona el parámetro badges
         resultEmployees = employees.filter(employee => employee.badges && employee.badges.includes(req.query.badges));
+    } else {
+        resultEmployees = employees;
     }
-    
+   
     // Enviar los empleados resultantes como una respuesta JSON con un código de estado 200
     res.status(200).json(resultEmployees);
 });
 
-
+app.get('/api/employees/:name', (req, res) => {
+    if(req.params.name != 'oldest') {
+        const employee = employees.find(employee => employee.name.toLowerCase() === req.params.name.toLowerCase());
+        if (!employee) {
+            return res.status(404).json({ code: "not_found" });
+        }
+        res.status(200).json(employee);
+    }else{
+        // Ordenar los empleados por edad en orden descendente
+    const oldestEmployees = employees.sort((a, b) => b.age - a.age);
+    
+    // Obtener el empleado más antiguo (el primero en la lista ordenada)
+    const oldestEmployee = oldestEmployees[0];
+    
+    // Enviar el empleado más antiguo como una respuesta JSON con un código de estado 200
+    res.status(200).json(oldestEmployee);
+    }
+});
 
 app.post('/api/employees', (req, res) => {
     const newEmployee = req.body;
@@ -50,17 +69,6 @@ app.post('/api/employees', (req, res) => {
 
     // Enviar el nuevo empleado como una respuesta JSON con un código de estado 201
     res.status(201).json(newEmployee);
-});
-
-app.get('/api/employees/oldest', (req, res) => {
-    // Ordenar los empleados por edad en orden descendente
-    const oldestEmployees = employees.sort((a, b) => b.age - a.age);
-    
-    // Obtener el empleado más antiguo (el primero en la lista ordenada)
-    const oldestEmployee = oldestEmployees[0];
-    
-    // Enviar el empleado más antiguo como una respuesta JSON con un código de estado 200
-    res.status(200).json(oldestEmployee);
 });
 
 
